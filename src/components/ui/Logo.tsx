@@ -7,12 +7,12 @@ export function Logo({ className }: { className?: string }) {
       href="#home"
       className={`group inline-flex items-center gap-3 ${className ?? ""}`}
     >
-      <span className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-[3px] bg-white/95 p-1">
+      <span className="relative flex h-9 w-9 shrink-0 items-center justify-center">
         <Image
           src="/logo-icon.png"
           alt=""
-          width={350}
-          height={305}
+          width={1254}
+          height={1254}
           className="h-full w-full object-contain"
           priority
         />
