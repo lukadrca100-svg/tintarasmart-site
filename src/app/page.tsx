@@ -5,6 +5,7 @@ import { WhatIsSmartFilm } from "@/components/sections/WhatIsSmartFilm";
 import { WhySmartFilm } from "@/components/sections/WhySmartFilm";
 import { Applications } from "@/components/sections/Applications";
 import { HowItWorks } from "@/components/sections/HowItWorks";
+import { Pricing } from "@/components/sections/Pricing";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
         <WhySmartFilm />
         <Applications />
         <HowItWorks />
+        <Pricing />
       </main>
       <Footer />
     </>
