@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
-import { GlassSwitchDemo } from "@/components/ui/GlassSwitchDemo";
 import { business } from "@/lib/constants";
 
 const chips = [
@@ -16,23 +15,22 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="relative overflow-hidden pt-40 pb-24 lg:pt-52 lg:pb-32"
+      className="relative flex min-h-[92vh] items-center overflow-hidden pt-28 pb-20"
     >
-      {/* Ambient background glow */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-[-12%] h-[620px] w-[620px] -translate-x-1/2 rounded-full bg-accent/[0.08] blur-[160px]" />
-      </div>
+      <video
+        src="/media/hero-loop.mp4"
+        poster="/media/brand-promo-poster.jpg"
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 -z-20 h-full w-full object-cover"
+      />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-background via-background/85 to-background/40" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background via-transparent to-background/40" />
 
-      {/* Oversized watermark word for editorial depth */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-4 left-1/2 -z-10 hidden -translate-x-1/2 select-none whitespace-nowrap font-display text-[13rem] font-light italic text-foreground/[0.025] lg:block xl:text-[16rem]"
-      >
-        Transparent
-      </div>
-
-      <Container className="grid items-center gap-16 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
-        <div>
+      <Container>
+        <div className="max-w-xl">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -94,17 +92,6 @@ export function Hero() {
             ))}
           </motion.div>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <GlassSwitchDemo />
-          <p className="mt-4 text-center text-[0.7rem] uppercase tracking-[0.14em] text-muted-dim">
-            Illustrative demo — try the switch
-          </p>
-        </motion.div>
       </Container>
     </section>
   );
