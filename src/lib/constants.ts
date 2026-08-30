@@ -5,15 +5,13 @@
  */
 
 export const business = {
-  // TODO: replace with your real business name
-  name: "[Your Business Name]",
-  shortName: "[Brand]",
-  tagline: "Smart Privacy Glass, Engineered for Modern Spaces",
-  // TODO: replace with your real service area, e.g. "Greater Austin, TX"
+  name: "Tintara Smart",
+  shortName: "Tintara Smart",
+  tagline: "Smart Film Solutions",
+  // TODO: replace with your real service area, e.g. "Greater Chicago, IL"
   serviceArea: "[Your Service Area]",
-  // TODO: replace with a real phone number
-  phone: "(000) 000-0000",
-  phoneHref: "tel:+10000000000",
+  phone: "(708) 336-1710",
+  phoneHref: "tel:+17083361710",
   // TODO: replace with a real lead email
   email: "quotes@yourdomain.com",
   // Leave as-is if you operate service-area-only with no public storefront

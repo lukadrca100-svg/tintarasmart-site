@@ -50,7 +50,7 @@ export function WhatIsSmartFilm() {
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6 }}
           >
-            <StatePanel state="off" />
+            <StatePanel state="off" photo="/media/smart-film-frosted.jpg" />
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -59,7 +59,7 @@ export function WhatIsSmartFilm() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="mt-8"
           >
-            <StatePanel state="on" />
+            <StatePanel state="on" photo="/media/smart-film-clear.jpg" />
           </motion.div>
         </div>
       </Container>
