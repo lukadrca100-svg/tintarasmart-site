@@ -20,7 +20,7 @@ export function GlassSwitchDemo({
 
   return (
     <div className={className}>
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.75rem] border border-border-strong bg-background-elevated shadow-[0_40px_120px_-40px_rgba(0,0,0,0.7)]">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.75rem] border border-border-strong bg-background-elevated shadow-[0_60px_140px_-40px_rgba(0,0,0,0.8),0_20px_60px_-20px_rgba(201,166,107,0.12)]">
         {/* Simulated interior — soft light blobs + furniture silhouettes, never claimed as a photo */}
         <div className="absolute inset-0">
           <div className="absolute -left-10 top-10 h-56 w-56 rounded-full bg-accent/25 blur-[70px]" />
@@ -36,6 +36,19 @@ export function GlassSwitchDemo({
             <div key={i} className="border border-foreground/[0.07]" />
           ))}
         </div>
+
+        {/* Architectural corner marks */}
+        {[
+          "left-4 top-4 border-l border-t",
+          "right-4 top-4 border-r border-t",
+          "left-4 bottom-4 border-l border-b",
+          "right-4 bottom-4 border-r border-b",
+        ].map((pos) => (
+          <div
+            key={pos}
+            className={`absolute h-4 w-4 border-accent/50 ${pos}`}
+          />
+        ))}
 
         {/* Frost layer — transitions with backdrop-filter + opacity */}
         <div
@@ -63,9 +76,9 @@ export function GlassSwitchDemo({
         </motion.div>
 
         {/* State label */}
-        <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full border border-border-strong bg-background/60 px-3 py-1.5 text-xs text-muted backdrop-blur-md">
+        <div className="absolute left-6 top-6 flex items-center gap-2.5 rounded-[3px] border border-border-strong bg-background/60 px-3 py-2 text-[0.65rem] uppercase tracking-[0.12em] text-muted backdrop-blur-md">
           <span
-            className={`h-1.5 w-1.5 rounded-full ${
+            className={`h-1.5 w-1.5 rounded-full transition-colors duration-500 ${
               clear ? "bg-accent-strong" : "bg-muted-dim"
             }`}
           />
@@ -73,12 +86,14 @@ export function GlassSwitchDemo({
         </div>
 
         {/* Control dock */}
-        <div className="absolute inset-x-5 bottom-5 flex items-center justify-between gap-4 rounded-2xl border border-border-strong bg-background/70 px-4 py-3 backdrop-blur-md sm:inset-x-8 sm:px-5 sm:py-4">
-          <div className="text-sm">
-            <div className="font-medium text-foreground">
+        <div className="absolute inset-x-6 bottom-6 flex items-center justify-between gap-4 rounded-[3px] border border-border-strong bg-background/70 px-5 py-4 backdrop-blur-md">
+          <div>
+            <div className="font-display text-base italic text-foreground">
               {clear ? "Clear — Transparent" : "Frosted — Private"}
             </div>
-            <div className="text-xs text-muted">Tap to switch states</div>
+            <div className="mt-0.5 text-[0.65rem] uppercase tracking-[0.12em] text-muted-dim">
+              Tap to switch states
+            </div>
           </div>
 
           <button

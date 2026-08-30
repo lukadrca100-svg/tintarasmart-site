@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Phone } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+import { Logo } from "@/components/ui/Logo";
 import { business, nav } from "@/lib/constants";
 
 export function Navbar() {
@@ -18,48 +19,65 @@ export function Navbar() {
   }, []);
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-        scrolled
-          ? "border-b border-border bg-background/80 backdrop-blur-md"
-          : "border-b border-transparent bg-transparent"
-      }`}
-    >
-      <Container className="flex h-18 items-center justify-between py-4">
-        <a
-          href="#home"
-          className="font-display text-lg tracking-tight text-foreground"
-        >
-          {business.shortName}
-        </a>
-
-        <nav className="hidden items-center gap-8 lg:flex">
-          {nav.map((item) => (
+    <header className="fixed inset-x-0 top-0 z-50">
+      {/* Slim utility bar */}
+      <div
+        className={`hidden overflow-hidden border-b border-border bg-background transition-[max-height,opacity] duration-300 lg:block ${
+          scrolled ? "max-h-0 opacity-0" : "max-h-10 opacity-100"
+        }`}
+      >
+        <Container className="flex h-10 items-center justify-between text-[0.7rem] tracking-[0.08em] text-muted-dim">
+          <span>{business.serviceArea}</span>
+          <div className="flex items-center gap-6">
+            <span>{business.hours}</span>
             <a
-              key={item.href}
-              href={item.href}
-              className="text-sm text-muted transition-colors hover:text-foreground"
+              href={business.phoneHref}
+              className="flex items-center gap-1.5 hover:text-accent-strong"
             >
-              {item.label}
+              <Phone size={11} /> {business.phone}
             </a>
-          ))}
-        </nav>
+          </div>
+        </Container>
+      </div>
 
-        <div className="hidden lg:block">
-          <Button href="#contact" variant="primary" className="px-5 py-2.5">
-            Get a Quote
-          </Button>
-        </div>
+      <div
+        className={`transition-colors duration-300 ${
+          scrolled
+            ? "border-b border-border bg-background/85 backdrop-blur-md"
+            : "border-b border-transparent bg-transparent"
+        }`}
+      >
+        <Container className="flex h-20 items-center justify-between">
+          <Logo />
 
-        <button
-          type="button"
-          aria-label="Toggle menu"
-          onClick={() => setOpen((v) => !v)}
-          className="rounded-full border border-border-strong p-2 text-foreground lg:hidden"
-        >
-          {open ? <X size={18} /> : <Menu size={18} />}
-        </button>
-      </Container>
+          <nav className="hidden items-center gap-9 lg:flex">
+            {nav.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="text-[0.8rem] tracking-wide text-muted transition-colors hover:text-foreground"
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+
+          <div className="hidden lg:block">
+            <Button href="#contact" variant="primary" className="px-6 py-3">
+              Get a Quote
+            </Button>
+          </div>
+
+          <button
+            type="button"
+            aria-label="Toggle menu"
+            onClick={() => setOpen((v) => !v)}
+            className="rounded-[3px] border border-border-strong p-2 text-foreground lg:hidden"
+          >
+            {open ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        </Container>
+      </div>
 
       {open && (
         <div className="border-t border-border bg-background/95 backdrop-blur-md lg:hidden">

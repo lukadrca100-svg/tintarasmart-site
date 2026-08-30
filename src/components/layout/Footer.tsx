@@ -1,15 +1,14 @@
 import { Container } from "@/components/ui/Container";
+import { Logo } from "@/components/ui/Logo";
 import { business, nav } from "@/lib/constants";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-background-elevated py-14">
-      <Container className="flex flex-col gap-10 lg:flex-row lg:justify-between">
+    <footer className="border-t border-border bg-background-elevated py-16">
+      <Container className="flex flex-col gap-12 lg:flex-row lg:justify-between">
         <div className="max-w-sm">
-          <div className="font-display text-lg text-foreground">
-            {business.shortName}
-          </div>
-          <p className="mt-3 text-sm text-muted">
+          <Logo />
+          <p className="mt-5 text-sm leading-relaxed text-muted">
             Smart Film installation for {business.serviceArea}. Instant
             privacy glass for residential and commercial spaces.
           </p>
@@ -17,10 +16,10 @@ export function Footer() {
 
         <div className="grid grid-cols-2 gap-10 sm:grid-cols-3">
           <div>
-            <div className="text-xs uppercase tracking-wider text-muted-dim">
+            <div className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-dim">
               Explore
             </div>
-            <ul className="mt-4 space-y-2.5">
+            <ul className="mt-5 space-y-3">
               {nav.map((item) => (
                 <li key={item.href}>
                   <a
@@ -35,10 +34,10 @@ export function Footer() {
           </div>
 
           <div>
-            <div className="text-xs uppercase tracking-wider text-muted-dim">
+            <div className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-dim">
               Contact
             </div>
-            <ul className="mt-4 space-y-2.5 text-sm text-muted">
+            <ul className="mt-5 space-y-3 text-sm text-muted">
               <li>
                 <a href={business.phoneHref} className="hover:text-foreground">
                   {business.phone}

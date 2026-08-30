@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, PlayCircle } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { GlassSwitchDemo } from "@/components/ui/GlassSwitchDemo";
@@ -17,30 +16,37 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="relative overflow-hidden pt-32 pb-20 lg:pt-44 lg:pb-28"
+      className="relative overflow-hidden pt-40 pb-24 lg:pt-52 lg:pb-32"
     >
       {/* Ambient background glow */}
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-[-10%] h-[560px] w-[560px] -translate-x-1/2 rounded-full bg-accent/10 blur-[140px]" />
+        <div className="absolute left-1/2 top-[-12%] h-[620px] w-[620px] -translate-x-1/2 rounded-full bg-accent/[0.08] blur-[160px]" />
       </div>
 
-      <Container className="grid items-center gap-16 lg:grid-cols-[1.05fr_1fr] lg:gap-12">
+      {/* Oversized watermark word for editorial depth */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-4 left-1/2 -z-10 hidden -translate-x-1/2 select-none whitespace-nowrap font-display text-[13rem] font-light italic text-foreground/[0.025] lg:block xl:text-[16rem]"
+      >
+        Transparent
+      </div>
+
+      <Container className="grid items-center gap-16 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
         <div>
           <motion.div
-            initial={{ opacity: 0, y: 14 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-surface px-4 py-1.5 text-xs tracking-wide text-muted"
+            className="kicker"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-accent-strong" />
-            Smart Film for {business.serviceArea}
+            Smart Film · {business.serviceArea}
           </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, y: 18 }}
+            initial={{ opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.05 }}
-            className="mt-6 font-display text-5xl leading-[1.05] tracking-tight text-balance sm:text-6xl lg:text-[4.25rem]"
+            transition={{ duration: 0.8, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-7 font-display text-6xl font-normal leading-[0.98] tracking-tight text-balance sm:text-7xl lg:text-[5.25rem]"
           >
             Privacy, at the
             <br />
@@ -50,8 +56,8 @@ export function Hero() {
           <motion.p
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.12 }}
-            className="mt-6 max-w-lg text-lg text-muted"
+            transition={{ duration: 0.7, delay: 0.16 }}
+            className="mt-8 max-w-md text-[1.05rem] leading-relaxed text-muted"
           >
             {business.name} transforms your existing glass into switchable
             Smart Film — instantly shifting from fully transparent to frosted
@@ -61,15 +67,13 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.18 }}
-            className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center"
+            transition={{ duration: 0.7, delay: 0.24 }}
+            className="mt-11 flex flex-col gap-5 sm:flex-row sm:items-center"
           >
-            <Button href="#contact" variant="primary">
+            <Button href="#contact" variant="primary" icon>
               Get a Free Quote
-              <ArrowRight size={16} />
             </Button>
-            <Button href="#how-it-works" variant="secondary">
-              <PlayCircle size={16} />
+            <Button href="#how-it-works" variant="link">
               See How It Works
             </Button>
           </motion.div>
@@ -77,15 +81,15 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="mt-10 flex flex-wrap gap-x-6 gap-y-2"
+            transition={{ duration: 0.7, delay: 0.4 }}
+            className="mt-16 flex flex-wrap items-center gap-x-6 gap-y-3"
           >
-            {chips.map((chip) => (
-              <span
-                key={chip}
-                className="text-xs uppercase tracking-wider text-muted-dim"
-              >
-                {chip}
+            {chips.map((chip, i) => (
+              <span key={chip} className="flex items-center gap-6">
+                {i > 0 && <span className="h-3 w-px bg-border-strong" />}
+                <span className="text-[0.65rem] uppercase tracking-[0.14em] text-muted-dim">
+                  {chip}
+                </span>
               </span>
             ))}
           </motion.div>
@@ -94,10 +98,10 @@ export function Hero() {
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.15 }}
+          transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
         >
           <GlassSwitchDemo />
-          <p className="mt-3 text-center text-xs text-muted-dim">
+          <p className="mt-4 text-center text-[0.7rem] uppercase tracking-[0.14em] text-muted-dim">
             Illustrative demo — try the switch
           </p>
         </motion.div>
