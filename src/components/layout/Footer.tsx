@@ -1,5 +1,6 @@
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/ui/Logo";
+import { SocialIcons } from "@/components/ui/SocialIcons";
 import { business, nav } from "@/lib/constants";
 
 export function Footer() {
@@ -57,10 +58,11 @@ export function Footer() {
         </div>
       </Container>
 
-      <Container className="mt-12 flex flex-col-reverse items-center gap-4 border-t border-border pt-6 text-xs text-muted-dim sm:flex-row sm:justify-between">
+      <Container className="mt-12 flex flex-col-reverse items-center gap-6 border-t border-border pt-6 text-xs text-muted-dim sm:flex-row sm:justify-between">
         <span>
           © {new Date().getFullYear()} {business.name}. All rights reserved.
         </span>
+        <SocialIcons />
       </Container>
     </footer>
   );

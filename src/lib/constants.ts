@@ -17,9 +17,10 @@ export const business = {
   address: null as string | null,
   hours: "Mon–Fri, 8am–6pm",
   social: {
-    instagram: "#",
-    facebook: "#",
-    google: "#",
+    instagram: "https://www.instagram.com/tintarasmart/",
+    facebook: "https://www.facebook.com",
+    tiktok: "https://www.tiktok.com/@tintarasmart",
+    youtube: "https://www.youtube.com/@TintaraSmart",
   },
 };
 
