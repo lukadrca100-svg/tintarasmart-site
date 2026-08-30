@@ -1,6 +1,10 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/sections/Hero";
+import { WhatIsSmartFilm } from "@/components/sections/WhatIsSmartFilm";
+import { WhySmartFilm } from "@/components/sections/WhySmartFilm";
+import { Applications } from "@/components/sections/Applications";
+import { HowItWorks } from "@/components/sections/HowItWorks";
 
 export default function Home() {
   return (
@@ -8,6 +12,10 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
+        <WhatIsSmartFilm />
+        <WhySmartFilm />
+        <Applications />
+        <HowItWorks />
       </main>
       <Footer />
     </>

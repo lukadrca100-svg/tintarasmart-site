@@ -36,6 +36,83 @@ export const nav = [
   { label: "FAQ", href: "#faq" },
 ];
 
+export const benefits = [
+  {
+    icon: "Zap",
+    title: "Instant Privacy",
+    description:
+      "Switch from fully transparent to frosted privacy in a fraction of a second — no waiting, no fumbling with cords.",
+  },
+  {
+    icon: "Layers",
+    title: "Modern Design",
+    description:
+      "Keep the clean, uninterrupted look of glass. No hardware, no fabric, no visual clutter across your windows.",
+  },
+  {
+    icon: "Smartphone",
+    title: "Control at Your Fingertips",
+    description:
+      "Operate from a wall switch, handheld remote, or your smart home app — including Alexa, Google Home, and Apple HomeKit.",
+  },
+  {
+    icon: "Sparkles",
+    title: "Effortless to Clean",
+    description:
+      "A flat glass surface with no slats, folds, or fabric to collect dust — clean it exactly like any window.",
+  },
+  {
+    icon: "Sun",
+    title: "Everyday Comfort",
+    description:
+      "Switch to frosted to soften glare and direct sun on demand, without losing the light itself.",
+  },
+] as const;
+
+export const applications = {
+  residential: [
+    { icon: "Bath", label: "Bathrooms" },
+    { icon: "BedDouble", label: "Bedrooms" },
+    { icon: "Sofa", label: "Living Rooms" },
+    { icon: "Briefcase", label: "Home Offices" },
+  ],
+  commercial: [
+    { icon: "Users", label: "Conference Rooms" },
+    { icon: "PanelsTopLeft", label: "Office Partitions" },
+    { icon: "Stethoscope", label: "Medical Offices" },
+    { icon: "Building2", label: "Hotels" },
+    { icon: "ShoppingBag", label: "Retail" },
+    { icon: "Store", label: "Showrooms" },
+  ],
+} as const;
+
+export const processSteps = [
+  {
+    number: "01",
+    title: "Consultation",
+    description:
+      "Tell us about your space and goals. We'll talk through where Smart Film makes sense and what to expect.",
+  },
+  {
+    number: "02",
+    title: "Measure & Design",
+    description:
+      "We measure your glass precisely and plan the install — zoning, control placement, and finish details.",
+  },
+  {
+    number: "03",
+    title: "Professional Installation",
+    description:
+      "Our team installs your Smart Film cleanly and carefully, with minimal disruption to your space.",
+  },
+  {
+    number: "04",
+    title: "Enjoy Instant Privacy",
+    description:
+      "Flip the switch. Your glass now shifts between transparent and private, on demand, whenever you need it.",
+  },
+] as const;
+
 export const pricingTiers = [
   {
     id: "diy",
