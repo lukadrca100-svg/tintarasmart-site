@@ -123,8 +123,41 @@ export const galleryItems = [
     src: "/media/smart-film-frosted.jpg",
     caption: "Same installation — powered off, frosted privacy",
   },
-  { type: "placeholder" },
-  { type: "placeholder" },
+  {
+    type: "photo",
+    src: "/media/living-room-clear.jpg",
+    caption: "Bay window living room — powered on, fully transparent",
+  },
+  {
+    type: "photo",
+    src: "/media/living-room-frosted.jpg",
+    caption: "Same room — powered off, frosted privacy",
+  },
+  {
+    type: "photo",
+    src: "/media/great-room-clear.jpg",
+    caption: "Two-story great room glazing — powered on, clear view",
+  },
+  {
+    type: "photo",
+    src: "/media/great-room-frosted.jpg",
+    caption: "Same great room — powered off, frosted privacy",
+  },
+  {
+    type: "photo",
+    src: "/media/bathroom-clear.jpg",
+    caption: "Primary bathroom windows — powered on, clear view",
+  },
+  {
+    type: "photo",
+    src: "/media/bathroom-frosted.jpg",
+    caption: "Same bathroom — powered off, instant privacy",
+  },
+  {
+    type: "photo",
+    src: "/media/exterior-frosted.jpg",
+    caption: "Full-height exterior glazing — switched to frosted",
+  },
   { type: "placeholder" },
   { type: "placeholder" },
 ] as const;
