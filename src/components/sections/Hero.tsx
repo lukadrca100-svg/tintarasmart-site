@@ -19,7 +19,7 @@ export function Hero() {
     >
       <video
         src="/media/hero-loop.mp4"
-        poster="/media/brand-promo-poster.jpg"
+        poster="/media/hero-poster.jpg"
         autoPlay
         muted
         loop
