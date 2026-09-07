@@ -59,8 +59,14 @@ export function Footer() {
       </Container>
 
       <Container className="mt-12 flex flex-col-reverse items-center gap-6 border-t border-border pt-6 text-xs text-muted-dim sm:flex-row sm:justify-between">
-        <span>
-          © {new Date().getFullYear()} {business.name}. All rights reserved.
+        <span className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:justify-start">
+          <span>
+            © {new Date().getFullYear()} {business.name}. All rights
+            reserved.
+          </span>
+          <a href="/privacy-policy" className="hover:text-foreground">
+            Privacy Policy
+          </a>
         </span>
         <SocialIcons />
       </Container>
