@@ -8,8 +8,7 @@ export const business = {
   name: "Tintara Smart",
   shortName: "Tintara Smart",
   tagline: "Smart Film Solutions",
-  // TODO: replace with your real service area, e.g. "Greater Chicago, IL"
-  serviceArea: "[Your Service Area]",
+  serviceArea: "Chicago Area",
   phone: "(708) 336-1710",
   phoneHref: "tel:+17083361710",
   email: "info@tintarasmart.com",

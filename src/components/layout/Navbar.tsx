@@ -27,7 +27,7 @@ export function Navbar() {
         }`}
       >
         <Container className="flex h-10 items-center justify-between text-[0.7rem] tracking-[0.08em] text-muted-dim">
-          <span>{business.serviceArea}</span>
+          <span>Serving {business.serviceArea}</span>
           <div className="flex items-center gap-6">
             <span>{business.hours}</span>
             <a
