@@ -61,7 +61,7 @@ function DimensionField({
           placeholder="0"
           onChange={(e) => onChange(e.target.value)}
           onWheel={(e) => e.currentTarget.blur()}
-          className="w-12 bg-transparent text-center font-display text-2xl text-foreground outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          className="w-16 bg-transparent text-center font-display text-2xl text-foreground outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
         <span className="text-xs text-muted-dim">{suffix}</span>
       </div>
@@ -73,13 +73,14 @@ export function Pricing() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const width = useNumberField(5, 0);
-  const height = useNumberField(6, 0);
+  const width = useNumberField(60, 0);
+  const height = useNumberField(72, 0);
   const qty = useNumberField(1, 1);
 
   const [selectedTier, setSelectedTier] = useState<string>("pro");
 
-  const perWindow = width.clamped * height.clamped;
+  // Inputs are in inches; pricing is per square foot (144 sq. in.).
+  const perWindow = (width.clamped * height.clamped) / 144;
   const totalSqft = Math.round(perWindow * qty.clamped * 10) / 10;
 
   const handleGetQuote = () => {
@@ -118,14 +119,14 @@ export function Pricing() {
             <DimensionField
               id="width"
               label="Width"
-              suffix="ft"
+              suffix="in"
               value={width.value}
               onChange={width.onChange}
             />
             <DimensionField
               id="height"
               label="Height"
-              suffix="ft"
+              suffix="in"
               value={height.value}
               onChange={height.onChange}
             />
@@ -139,7 +140,7 @@ export function Pricing() {
           </div>
 
           <div className="mt-5 text-center text-sm text-muted">
-            {width.clamped || "–"} ft × {height.clamped || "–"} ft ×{" "}
+            {width.clamped || "–"} in × {height.clamped || "–"} in ×{" "}
             {qty.clamped} ={" "}
             <span className="font-display italic text-accent-strong">
               {totalSqft} sq. ft.
