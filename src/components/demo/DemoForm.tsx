@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import clsx from "clsx";
-import { CheckCircle2, Phone } from "lucide-react";
+import { CheckCircle2, ImagePlus, Phone, Plus, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { business } from "@/lib/constants";
+import { isValidEmail, normalizePhone, sqftOf, type WindowRow } from "@/lib/validate";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -25,8 +26,10 @@ const glassOptions = [
 
 const timeOptions = ["Weekday morning", "Weekday afternoon", "Weekday evening", "Saturday"];
 
+const MAX_PHOTOS = 5;
+
 const fieldClasses =
-  "w-full rounded-[3px] border border-border-strong bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-dim focus:border-accent";
+  "w-full rounded-[3px] border bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-dim focus:border-accent";
 
 function Label({ children, htmlFor }: { children: string; htmlFor?: string }) {
   return (
@@ -37,6 +40,11 @@ function Label({ children, htmlFor }: { children: string; htmlFor?: string }) {
       {children}
     </label>
   );
+}
+
+function FieldError({ children }: { children?: string }) {
+  if (!children) return null;
+  return <p className="mt-1.5 text-xs text-red-400">{children}</p>;
 }
 
 function Chip({
@@ -65,6 +73,26 @@ function Chip({
   );
 }
 
+/** Shrinks a phone photo to at most 1280px and ~150 KB so uploads stay fast. */
+async function shrinkImage(file: File): Promise<File> {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, 1280 / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, "image/jpeg", 0.72));
+    if (!blob) return file;
+    const name = file.name.replace(/\.[^.]+$/, "") + ".jpg";
+    return new File([blob], name, { type: "image/jpeg" });
+  } catch {
+    return file;
+  }
+}
+
+const emptyRow = (): WindowRow => ({ label: "", width: 0, height: 0, qty: 1 });
+
 export function DemoForm() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -73,13 +101,50 @@ export function DemoForm() {
   const [propertyType, setPropertyType] = useState<"residential" | "commercial">("residential");
   const [glass, setGlass] = useState<string[]>([]);
   const [bestTime, setBestTime] = useState("");
+  const [rows, setRows] = useState<WindowRow[]>([emptyRow()]);
+  const [photos, setPhotos] = useState<{ file: File; url: string }[]>([]);
+  const [errors, setErrors] = useState<{ name?: string; city?: string; phone?: string; email?: string }>({});
   const [status, setStatus] = useState<Status>("idle");
+
+  useEffect(() => () => photos.forEach((p) => URL.revokeObjectURL(p.url)), [photos]);
 
   const toggleGlass = (option: string) =>
     setGlass((prev) => (prev.includes(option) ? prev.filter((g) => g !== option) : [...prev, option]));
 
+  const updateRow = (i: number, patch: Partial<WindowRow>) =>
+    setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, ...patch } : r)));
+
+  const filledRows = rows.filter((r) => r.width > 0 && r.height > 0);
+  const totalSqft = Math.round(filledRows.reduce((s, r) => s + sqftOf(r), 0) * 10) / 10;
+  const totalPanels = filledRows.reduce((s, r) => s + Math.max(1, r.qty), 0);
+
+  const addPhotos = async (files: FileList | null) => {
+    if (!files) return;
+    const room = MAX_PHOTOS - photos.length;
+    const picked = Array.from(files).filter((f) => f.type.startsWith("image/")).slice(0, room);
+    const shrunk = await Promise.all(picked.map(shrinkImage));
+    setPhotos((prev) => [...prev, ...shrunk.map((file) => ({ file, url: URL.createObjectURL(file) }))]);
+  };
+
+  const removePhoto = (i: number) =>
+    setPhotos((prev) => {
+      URL.revokeObjectURL(prev[i].url);
+      return prev.filter((_, idx) => idx !== i);
+    });
+
+  const validate = () => {
+    const next: typeof errors = {};
+    if (!name.trim()) next.name = "Please enter your name.";
+    if (!city.trim()) next.city = "Please enter your city.";
+    if (!normalizePhone(phone)) next.phone = "Enter a 10-digit phone number, like (708) 555-1234.";
+    if (!isValidEmail(email)) next.email = "Enter a valid email, like jane@gmail.com.";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return;
     setStatus("submitting");
     try {
       const formData = new FormData();
@@ -91,6 +156,11 @@ export function DemoForm() {
       formData.append("propertyType", propertyType);
       formData.append("glass", glass.join(", "));
       formData.append("bestTime", bestTime);
+      formData.append(
+        "windows",
+        JSON.stringify(filledRows.map((r) => ({ ...r, qty: Math.max(1, r.qty) })))
+      );
+      photos.forEach((p, i) => formData.append(`photo-${i}`, p.file));
 
       const res = await fetch("/api/quote", { method: "POST", body: formData });
       if (!res.ok) throw new Error("Request failed");
@@ -121,6 +191,7 @@ export function DemoForm() {
 
   return (
     <form
+      noValidate
       onSubmit={handleSubmit}
       className="rounded-[3px] border border-border-strong bg-background-elevated p-6 sm:p-8"
     >
@@ -145,22 +216,33 @@ export function DemoForm() {
             autoComplete="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className={fieldClasses}
+            className={clsx(fieldClasses, errors.name ? "border-red-400" : "border-border-strong")}
             placeholder="Jane Smith"
           />
+          <FieldError>{errors.name}</FieldError>
         </div>
         <div>
           <Label htmlFor="demo-phone">Phone</Label>
           <input
             id="demo-phone"
             type="tel"
+            inputMode="tel"
             required
             autoComplete="tel"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className={fieldClasses}
+            onChange={(e) => {
+              setPhone(e.target.value);
+              if (errors.phone) setErrors((p) => ({ ...p, phone: undefined }));
+            }}
+            onBlur={() =>
+              phone && !normalizePhone(phone) &&
+              setErrors((p) => ({ ...p, phone: "Enter a 10-digit phone number, like (708) 555-1234." }))
+            }
+            aria-invalid={!!errors.phone}
+            className={clsx(fieldClasses, errors.phone ? "border-red-400" : "border-border-strong")}
             placeholder="(555) 123-4567"
           />
+          <FieldError>{errors.phone}</FieldError>
         </div>
         <div>
           <Label htmlFor="demo-city">City</Label>
@@ -169,21 +251,33 @@ export function DemoForm() {
             required
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className={fieldClasses}
+            className={clsx(fieldClasses, errors.city ? "border-red-400" : "border-border-strong")}
             placeholder="Your city"
           />
+          <FieldError>{errors.city}</FieldError>
         </div>
         <div>
-          <Label htmlFor="demo-email">Email (optional)</Label>
+          <Label htmlFor="demo-email">Email</Label>
           <input
             id="demo-email"
             type="email"
+            inputMode="email"
+            required
             autoComplete="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={fieldClasses}
-            placeholder="jane@email.com"
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (errors.email) setErrors((p) => ({ ...p, email: undefined }));
+            }}
+            onBlur={() =>
+              email && !isValidEmail(email) &&
+              setErrors((p) => ({ ...p, email: "Enter a valid email, like jane@gmail.com." }))
+            }
+            aria-invalid={!!errors.email}
+            className={clsx(fieldClasses, errors.email ? "border-red-400" : "border-border-strong")}
+            placeholder="jane@gmail.com"
           />
+          <FieldError>{errors.email}</FieldError>
         </div>
       </div>
 
@@ -198,7 +292,121 @@ export function DemoForm() {
         </div>
       </div>
 
+      {/* Measurements */}
+      <div className="mt-6 rounded-[3px] border border-border p-4 sm:p-5">
+        <div className="flex items-baseline justify-between gap-3">
+          <div className="text-[0.65rem] uppercase tracking-[0.14em] text-muted-dim">
+            Glass sizes (optional)
+          </div>
+          {totalSqft > 0 && (
+            <div className="text-xs text-accent-strong">
+              {totalPanels} {totalPanels === 1 ? "panel" : "panels"} · {totalSqft} sq ft
+            </div>
+          )}
+        </div>
+        <p className="mt-1.5 text-xs text-muted-dim">
+          Measure just the glass, in inches. Rough numbers are fine, we measure exactly at the demo.
+        </p>
+
+        <div className="mt-4 space-y-3">
+          {rows.map((row, i) => (
+            <div key={i} className="grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[1.4fr_0.7fr_0.7fr_0.5fr_auto]">
+              <input
+                aria-label={`Window ${i + 1} name`}
+                value={row.label}
+                onChange={(e) => updateRow(i, { label: e.target.value })}
+                placeholder={i === 0 ? "e.g. Front door" : `Window ${i + 1}`}
+                className={clsx(fieldClasses, "col-span-2 border-border-strong sm:col-span-1")}
+              />
+              <div className="col-span-2 grid grid-cols-[1fr_1fr_0.7fr_auto] gap-2 sm:contents">
+                {(
+                  [
+                    ["width", "W in"],
+                    ["height", "H in"],
+                    ["qty", "Qty"],
+                  ] as const
+                ).map(([key, ph]) => (
+                  <input
+                    key={key}
+                    aria-label={`Window ${i + 1} ${key}`}
+                    type="number"
+                    inputMode="decimal"
+                    min={key === "qty" ? 1 : 0}
+                    value={row[key] || ""}
+                    onChange={(e) => updateRow(i, { [key]: Math.max(0, Number(e.target.value) || 0) })}
+                    onWheel={(e) => e.currentTarget.blur()}
+                    placeholder={ph}
+                    className={clsx(
+                      fieldClasses,
+                      "border-border-strong px-3 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    )}
+                  />
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setRows((prev) => (prev.length === 1 ? [emptyRow()] : prev.filter((_, idx) => idx !== i)))}
+                  aria-label={`Remove window ${i + 1}`}
+                  className="flex items-center justify-center rounded-[3px] border border-border-strong px-3 text-muted-dim hover:text-foreground"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setRows((prev) => [...prev, emptyRow()])}
+          className="mt-3 inline-flex items-center gap-2 text-sm text-accent-strong hover:text-foreground"
+        >
+          <Plus size={15} /> Add another window
+        </button>
+      </div>
+
+      {/* Photos */}
       <div className="mt-5">
+        <Label htmlFor="demo-photos">Photos of your glass (optional)</Label>
+        <div className="flex flex-wrap gap-3">
+          {photos.map((p, i) => (
+            <div key={p.url} className="relative h-20 w-20 overflow-hidden rounded-[3px] border border-border-strong">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={p.url} alt={`Photo ${i + 1}`} className="h-full w-full object-cover" />
+              <button
+                type="button"
+                onClick={() => removePhoto(i)}
+                aria-label="Remove photo"
+                className="absolute right-1 top-1 rounded-full bg-background/80 p-0.5 text-foreground"
+              >
+                <X size={13} />
+              </button>
+            </div>
+          ))}
+          {photos.length < MAX_PHOTOS && (
+            <label
+              htmlFor="demo-photos"
+              className="flex h-20 w-20 cursor-pointer flex-col items-center justify-center gap-1 rounded-[3px] border border-dashed border-border-strong text-muted-dim hover:border-accent/50 hover:text-foreground"
+            >
+              <ImagePlus size={18} />
+              <span className="text-[0.6rem] uppercase tracking-[0.1em]">Add</span>
+              <input
+                id="demo-photos"
+                type="file"
+                accept="image/*"
+                multiple
+                className="sr-only"
+                onChange={(e) => {
+                  addPhotos(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+          )}
+        </div>
+        <p className="mt-2 text-xs text-muted-dim">Up to {MAX_PHOTOS} photos. Helps us bring the right samples.</p>
+      </div>
+
+      <div className="mt-6">
         <Label>Best time for the demo</Label>
         <div className="grid grid-cols-2 gap-2">
           {timeOptions.map((option) => (
@@ -214,7 +422,7 @@ export function DemoForm() {
       </Button>
 
       <p className="mt-3 text-center text-xs text-muted-dim">
-        Free, no obligation. We only use your number to schedule the visit.
+        Free, no obligation. We only use your info to schedule the visit.
       </p>
 
       {status === "error" && (

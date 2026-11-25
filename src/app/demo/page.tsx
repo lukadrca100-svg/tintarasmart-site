@@ -150,7 +150,7 @@ export default function DemoPage() {
 
             <div className="mt-10 flex flex-col items-center justify-center gap-5 sm:flex-row">
               <Button href="#book" variant="primary" icon>
-                Book My Free Demo
+                See My Price
               </Button>
               <Button href={business.phoneHref} variant="link">
                 Or call {business.phone}
@@ -162,6 +162,32 @@ export default function DemoPage() {
           </Container>
         </section>
 
+        {/* Booking form */}
+        <section id="book" className="border-t border-border py-24 lg:py-32">
+          <Container className="grid gap-14 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12">
+            <div>
+              <SectionHeading
+                kicker="Free demo"
+                title={
+                  <>
+                    See your price.
+                    <br />
+                    <span className="italic text-accent-strong">Book your demo.</span>
+                  </>
+                }
+                description="Add your glass sizes to see your price instantly. Then we'll reach out within 24 hours to set up your free in-home demo."
+              />
+              <a
+                href={business.phoneHref}
+                className="mt-10 inline-flex items-center gap-3 text-sm text-muted hover:text-foreground"
+              >
+                <Phone size={16} className="text-accent-strong" />
+                Prefer to talk? Call or text {business.phone}
+              </a>
+            </div>
+            <DemoForm />
+          </Container>
+        </section>
         {/* Problems */}
         <section className="border-t border-border py-24 lg:py-32">
           <Container>
@@ -297,32 +323,6 @@ export default function DemoPage() {
           </Container>
         </section>
 
-        {/* Booking form */}
-        <section id="book" className="border-t border-border py-24 lg:py-32">
-          <Container className="grid gap-14 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12">
-            <div>
-              <SectionHeading
-                kicker="Free demo"
-                title={
-                  <>
-                    Book your
-                    <br />
-                    <span className="italic text-accent-strong">free demo.</span>
-                  </>
-                }
-                description="Tell us a little about your glass. We'll reach out within 24 hours to set a time that works for you."
-              />
-              <a
-                href={business.phoneHref}
-                className="mt-10 inline-flex items-center gap-3 text-sm text-muted hover:text-foreground"
-              >
-                <Phone size={16} className="text-accent-strong" />
-                Prefer to talk? Call or text {business.phone}
-              </a>
-            </div>
-            <DemoForm />
-          </Container>
-        </section>
       </main>
 
       <footer className="border-t border-border py-10">
