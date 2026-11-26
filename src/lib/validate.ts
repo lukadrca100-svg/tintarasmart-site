@@ -21,3 +21,13 @@ export type WindowRow = { label: string; width: number; height: number; qty: num
 export function sqftOf(w: WindowRow) {
   return (w.width * w.height * w.qty) / 144;
 }
+
+/** Installed price per sq ft by job size (Pro Install), plus one $60 transformer per zone. */
+export const PRICING = { base: 43, over50: 40, over100: 38, perZone: 60 };
+
+export function estimate(totalSqft: number, zones: number) {
+  const rate = totalSqft > 100 ? PRICING.over100 : totalSqft > 50 ? PRICING.over50 : PRICING.base;
+  const film = Math.round(totalSqft * rate);
+  const transformers = Math.max(1, zones) * PRICING.perZone;
+  return { rate, film, transformers, total: film + transformers };
+}

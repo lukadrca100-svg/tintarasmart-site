@@ -5,7 +5,9 @@ import clsx from "clsx";
 import { CheckCircle2, ImagePlus, Phone, Plus, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { business } from "@/lib/constants";
-import { isValidEmail, normalizePhone, sqftOf, type WindowRow } from "@/lib/validate";
+import { PRICING, estimate, isValidEmail, normalizePhone, sqftOf, type WindowRow } from "@/lib/validate";
+
+const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -102,6 +104,7 @@ export function DemoForm() {
   const [glass, setGlass] = useState<string[]>([]);
   const [bestTime, setBestTime] = useState("");
   const [rows, setRows] = useState<WindowRow[]>([emptyRow()]);
+  const [zones, setZones] = useState(1);
   const [photos, setPhotos] = useState<{ file: File; url: string }[]>([]);
   const [errors, setErrors] = useState<{ name?: string; city?: string; phone?: string; email?: string }>({});
   const [status, setStatus] = useState<Status>("idle");
@@ -117,6 +120,9 @@ export function DemoForm() {
   const filledRows = rows.filter((r) => r.width > 0 && r.height > 0);
   const totalSqft = Math.round(filledRows.reduce((s, r) => s + sqftOf(r), 0) * 10) / 10;
   const totalPanels = filledRows.reduce((s, r) => s + Math.max(1, r.qty), 0);
+  const maxZones = Math.max(1, totalPanels);
+  const zoneCount = Math.min(Math.max(1, zones), maxZones);
+  const price = totalSqft > 0 ? estimate(totalSqft, zoneCount) : null;
 
   const addPhotos = async (files: FileList | null) => {
     if (!files) return;
@@ -156,6 +162,7 @@ export function DemoForm() {
       formData.append("propertyType", propertyType);
       formData.append("glass", glass.join(", "));
       formData.append("bestTime", bestTime);
+      formData.append("zones", String(zoneCount));
       formData.append(
         "windows",
         JSON.stringify(filledRows.map((r) => ({ ...r, qty: Math.max(1, r.qty) })))
@@ -296,7 +303,7 @@ export function DemoForm() {
       <div className="mt-6 rounded-[3px] border border-border p-4 sm:p-5">
         <div className="flex items-baseline justify-between gap-3">
           <div className="text-[0.65rem] uppercase tracking-[0.14em] text-muted-dim">
-            Glass sizes (optional)
+            Instant price
           </div>
           {totalSqft > 0 && (
             <div className="text-xs text-accent-strong">
@@ -305,7 +312,7 @@ export function DemoForm() {
           )}
         </div>
         <p className="mt-1.5 text-xs text-muted-dim">
-          Measure just the glass, in inches. Rough numbers are fine, we measure exactly at the demo.
+          Measure just the glass, in inches, and see your price instantly. We confirm exact sizes at the demo.
         </p>
 
         <div className="mt-4 space-y-3">
@@ -362,6 +369,67 @@ export function DemoForm() {
         >
           <Plus size={15} /> Add another window
         </button>
+
+        {totalPanels > 0 && (
+          <div className="mt-5 border-t border-border pt-4">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <div className="text-sm text-foreground">Separate switches (zones)</div>
+                <p className="mt-0.5 text-xs text-muted-dim">
+                  Each zone switches on its own and needs its own transformer (+{usd.format(PRICING.perZone)}).
+                </p>
+              </div>
+              <div className="flex shrink-0 items-center rounded-[3px] border border-border-strong">
+                <button
+                  type="button"
+                  aria-label="Fewer zones"
+                  onClick={() => setZones(Math.max(1, zoneCount - 1))}
+                  className="px-3 py-2 text-muted hover:text-foreground disabled:opacity-30"
+                  disabled={zoneCount <= 1}
+                >
+                  −
+                </button>
+                <span className="w-8 text-center text-sm text-foreground" aria-live="polite">{zoneCount}</span>
+                <button
+                  type="button"
+                  aria-label="More zones"
+                  onClick={() => setZones(Math.min(maxZones, zoneCount + 1))}
+                  className="px-3 py-2 text-muted hover:text-foreground disabled:opacity-30"
+                  disabled={zoneCount >= maxZones}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {price && (
+          <div className="mt-5 rounded-[3px] bg-accent/10 p-4">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-[0.65rem] uppercase tracking-[0.14em] text-accent-strong">Your estimate</span>
+              <span className="font-display text-3xl text-foreground">{usd.format(price.total)}</span>
+            </div>
+            <div className="mt-3 space-y-1 text-xs text-muted">
+              <div className="flex justify-between">
+                <span>{totalSqft} sq ft × {usd.format(price.rate)}/sq ft, installation included</span>
+                <span>{usd.format(price.film)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>{zoneCount} {zoneCount === 1 ? "transformer" : "transformers"} × {usd.format(PRICING.perZone)}</span>
+                <span>{usd.format(price.transformers)}</span>
+              </div>
+            </div>
+            <p className="mt-3 text-[0.7rem] leading-relaxed text-muted-dim">
+              {price.rate === PRICING.base
+                ? `Over 50 sq ft drops to ${usd.format(PRICING.over50)}/sq ft, over 100 sq ft to ${usd.format(PRICING.over100)}/sq ft. `
+                : price.rate === PRICING.over50
+                  ? `Over 100 sq ft drops to ${usd.format(PRICING.over100)}/sq ft. `
+                  : ""}
+              Plus sales tax. Final price confirmed after we measure at your free demo.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Photos */}
@@ -418,11 +486,13 @@ export function DemoForm() {
       </div>
 
       <Button type="submit" variant="primary" className="mt-7 w-full" icon>
-        {status === "submitting" ? "Sending..." : "Book My Free Demo"}
+        {status === "submitting" ? "Sending..." : price ? "Lock In My Price" : "Book My Free Demo"}
       </Button>
 
       <p className="mt-3 text-center text-xs text-muted-dim">
-        Free, no obligation. We only use your info to schedule the visit.
+        {price
+          ? "Free in-home demo, no obligation. We confirm your measurements and schedule your install."
+          : "Free, no obligation. We only use your info to schedule the visit."}
       </p>
 
       {status === "error" && (

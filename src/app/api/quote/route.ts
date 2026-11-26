@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { notifyLead, type Attachment } from "@/lib/notify";
-import { formatPhone, isValidEmail, normalizePhone, sqftOf, type WindowRow } from "@/lib/validate";
+import { estimate, formatPhone, isValidEmail, normalizePhone, sqftOf, type WindowRow } from "@/lib/validate";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
 
   const phone = formatPhone(phoneDigits);
   const propertyType = get("propertyType");
-  const windowsText = formatWindows(get("windows"));
+  const windowsText = formatWindows(get("windows"), Number(get("zones")) || 1);
   const attachments = await collectPhotos(formData);
 
   const lines = [
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
   return NextResponse.json({ ok: true });
 }
 
-function formatWindows(raw: string): string {
+function formatWindows(raw: string, zones: number): string {
   if (!raw) return "";
   let rows: WindowRow[];
   try {
@@ -86,6 +86,13 @@ function formatWindows(raw: string): string {
   const total = Math.round(clean.reduce((s, r) => s + sqftOf(r), 0) * 10) / 10;
   const panels = clean.reduce((s, r) => s + r.qty, 0);
   out.push(`Ukupno: ${panels} kom, ${total} sq ft`);
+  const z = Math.min(Math.max(1, Math.round(zones)), panels);
+  const est = estimate(total, z);
+  out.push(`Zone (posebni prekidaci): ${z}`);
+  out.push(
+    `Cijena koju je kupac vidio: $${est.total.toLocaleString("en-US")} ` +
+      `(${total} sq ft x $${est.rate} = $${est.film.toLocaleString("en-US")} + ${z} x $60 transformator = $${est.transformers}), bez poreza`
+  );
   return out.join("\n");
 }
 
