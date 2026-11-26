@@ -26,8 +26,8 @@ import { business } from "@/lib/constants";
  * and change the two paths below.
  */
 const VSL = {
-  src: "/media/brand-promo.mp4",
-  poster: "/media/brand-promo-poster.jpg",
+  src: "/media/vsl.mp4",
+  poster: "/media/vsl-poster.jpg",
 };
 
 export const metadata: Metadata = {
@@ -133,18 +133,17 @@ export default function DemoPage() {
               <span className="italic text-accent-strong">One tap.</span>
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-[1.05rem] leading-relaxed text-muted">
-              Smart film turns the glass you already have into privacy glass. Watch the 2 minute
-              video, then see it on your own windows with a free demo.
+              Smart film turns the glass you already have into privacy glass. Watch it switch, then see it on your own windows with a free demo.
             </p>
 
-            <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-[3px] border border-border-strong bg-background-elevated shadow-[0_40px_120px_-40px_rgba(201,166,107,0.35)]">
+            <div className="mx-auto mt-10 w-full max-w-[360px] overflow-hidden rounded-[3px] border border-border-strong bg-background-elevated shadow-[0_40px_120px_-40px_rgba(201,166,107,0.35)]">
               <video
                 src={VSL.src}
                 poster={VSL.poster}
                 controls
                 playsInline
                 preload="metadata"
-                className="aspect-video w-full bg-black object-cover"
+                className="aspect-[9/16] w-full bg-black object-cover"
               />
             </div>
 
